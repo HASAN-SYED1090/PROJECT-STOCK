@@ -1,0 +1,10 @@
+Buy 
+AAPL
+Buy 
+TSLA
+Sell 
+GOOG
+Buy 
+TSLA
+Sell 
+TSLA
