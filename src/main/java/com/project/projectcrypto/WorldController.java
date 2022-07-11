@@ -1,7 +1,6 @@
 package com.project.projectcrypto;
 
 
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -19,8 +18,6 @@ import javafx.scene.text.Text;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -28,7 +25,7 @@ import java.util.ResourceBundle;
 
 
 
-public class HelloController implements Initializable {
+public class WorldController implements Initializable {
 
     ObservableList<String> stockList = FXCollections.observableArrayList("TSLA","AAPL","MSFT","F","HPQ","GOOG");
 
@@ -52,8 +49,6 @@ public class HelloController implements Initializable {
 
     @FXML
     private Button worldButton;
-
-
 
     @FXML
     private ComboBox<String> stockComboBox;

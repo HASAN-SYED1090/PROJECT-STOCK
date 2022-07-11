@@ -1,4 +1,4 @@
 TSLA
-2
+3
 market
 buy

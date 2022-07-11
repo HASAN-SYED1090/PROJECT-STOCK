@@ -1,5 +1,7 @@
 package com.project.projectcrypto;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -10,10 +12,20 @@ import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 
+import java.io.*;
 import java.net.URL;
+import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
+import java.util.Scanner;
 
 public class portfolioController implements Initializable {
+
+    public static final int daysReq = 0;
+    public static final int profitReq = 0;
+
+    ordersReader ord = new ordersReader();
+
 
     @FXML
     private TableColumn<Portfolio, String> cost;
@@ -40,32 +52,85 @@ public class portfolioController implements Initializable {
     private TableColumn<Portfolio, String> ticker;
 
     @FXML
+    private TextField preferredStock;
+
+    public portfolioController() throws IOException {
+    }
+
+
+    void checkFields(){
+        if(req_profit.getText().trim().equals("") && no_of_days.getText().trim().equals("") ) {
+
+            submit.disableProperty().bind(req_profit.textProperty().isEmpty());
+            submit.disableProperty().bind(no_of_days.textProperty().isEmpty());
+            submit.disableProperty().bind(Bindings.or(no_of_days.textProperty()
+                    .lessThanOrEqualTo(String.valueOf(daysReq)),req_profit.textProperty().
+                    lessThanOrEqualTo(String.valueOf(profitReq))));
+
+        }
+    }
+
+    @FXML
     void onButtonSubmit(ActionEvent event) {
 
-    }
 
-    public void changeTickerCellEvent(TableColumn.CellEditEvent editedCell) {
-        Portfolio tickerSelected = table.getSelectionModel().getSelectedItem();
-        tickerSelected.setTicker(editedCell.getNewValue().toString());
-    }
+        try {
 
-    public void changeQuantityCellEvent(CellEditEvent editedCell)
-    {
-        Portfolio quantity =  table.getSelectionModel().getSelectedItem();
-        quantity.setQuantity(editedCell.getNewValue().toString());
-    }
+                int req = Integer.parseInt(req_profit.getText());
+                int days = Integer.parseInt(no_of_days.getText());
+                ratereader fetchrates = new ratereader();
+                double ratetsla = fetchrates.getRatetsla();
+                double rateaapl = fetchrates.getRateaapl();
+                double ratemsft = fetchrates.getRatemsft();
+                double ratef = fetchrates.getRatef();
+                double ratehpq = fetchrates.getRatehpq();
+                double rategoog = fetchrates.getRategoog();
 
-    public void changeOrderTypeCellEvent(CellEditEvent editedCell)
-    {
-        Portfolio order_type =  table.getSelectionModel().getSelectedItem();
-        order_type.setOrder_type(editedCell.getNewValue().toString());
-    }
+                profitprediction profit = new profitprediction(req, days);
+                profit.setRate(ratetsla);
+                boolean tslaresult = profit.profitcalculator();
+                profit.setRate(rateaapl);
+                boolean aaplresult = profit.profitcalculator();
+                profit.setRate(ratemsft);
+                boolean msftresult = profit.profitcalculator();
+                profit.setRate(ratef);
+                boolean fresult = profit.profitcalculator();
+                profit.setRate(ratehpq);
+                boolean hpqresult = profit.profitcalculator();
+                profit.setRate(rategoog);
+                boolean googresult = profit.profitcalculator();
+                if (tslaresult == true) {
+                    preferredStock.setText("Tesla profit predicted");
+                }
+                if (aaplresult == true) {
+                    preferredStock.setText("Apple profit predicted");
+                }
+                if (msftresult == true) {
+                    preferredStock.setText("Msft profit predicted");
+                }
+                if (fresult == true) {
+                    preferredStock.setText("F profit predicted");
+                }
+                if (hpqresult == true) {
+                    preferredStock.setText("HP profit predicted");
+                }
+                if (googresult == true) {
+                    preferredStock.setText("GOOG profit predicted");
+                }
 
-    public void changeCostCellEvent(CellEditEvent editedCell)
-    {
-        Portfolio cost =  table.getSelectionModel().getSelectedItem();
-        cost.setCost(editedCell.getNewValue().toString());
-    }
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (NumberFormatException e) {
+                System.err.println("Enter valid no.");
+            } catch (InputMismatchException e) {
+                System.err.println("Enter digits only");
+            }
+
+        }
+
+
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         //set up the columns in the table
@@ -75,7 +140,11 @@ public class portfolioController implements Initializable {
         cost.setCellValueFactory(new PropertyValueFactory<Portfolio, String>("cost"));
 
         //load dummy data
-        table.setItems(getPortfolio());
+        try {
+            table.setItems(getPortfolio());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         //Update the table to allow for the first and last name fields
         //to be editable
@@ -89,14 +158,17 @@ public class portfolioController implements Initializable {
         table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 
+        checkFields();
+
     }
 
-    public ObservableList<Portfolio>  getPortfolio()
-    {
+    public ObservableList<Portfolio>  getPortfolio() throws IOException {
         ObservableList<Portfolio> portfolio = FXCollections.observableArrayList();
-        portfolio.add(new Portfolio("TSLA","12","Market", "$123"));
-        portfolio.add(new Portfolio("MSFT","2","Limit", "$234"));
-        portfolio.add(new Portfolio("F","3", "Market", "$345"));
+
+        System.out.println(ord.size);
+        for (int i = 0; i < ord.size; i++) {
+            portfolio.add(new Portfolio(ord.ticker[i],ord.quantity[i],ord.order_type, ord.cost[i]));
+        }
 
         return portfolio;
     }

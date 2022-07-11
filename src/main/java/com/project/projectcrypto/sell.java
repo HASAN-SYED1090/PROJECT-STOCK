@@ -10,7 +10,8 @@ public class sell extends Trade {
         try {
             String s = null;
 
-            Process p = Runtime.getRuntime().exec("python C:\\Users\\HPP\\ProjectCrypto\\src\\main\\java\\com\\project\\projectcrypto\\sell.py");
+            Process p = Runtime.getRuntime().exec("python C:\\Users\\HPP\\ProjectCrypto\\" +
+                    "src\\main\\java\\com\\project\\projectcrypto\\sell.py");
             BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
             while((s = in.readLine()) != null){
                 System.out.println(s);

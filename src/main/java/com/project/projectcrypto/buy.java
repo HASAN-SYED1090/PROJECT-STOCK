@@ -11,7 +11,8 @@ public class buy extends Trade {
         try {
             String s = null;
 
-            Process p = Runtime.getRuntime().exec("python C:\\Users\\HPP\\ProjectCrypto\\src\\main\\java\\com\\project\\projectcrypto\\buy.py");
+            Process p = Runtime.getRuntime().exec("python C:\\Users\\HPP\\ProjectCrypto\\src\\main" +
+                    "\\java\\com\\project\\projectcrypto\\buy.py");
             BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
             while((s = in.readLine()) != null){
                 System.out.println(s);

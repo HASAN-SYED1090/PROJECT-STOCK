@@ -8,6 +8,10 @@ public abstract class Trade {
     String ordertype;
     String side;
 
+    public Trade(){
+        this("",0,"","");
+    }
+
     public Trade(String ticker, int quantity, String ordertype, String side) {
         setTicker(ticker);
         setQuantity(quantity);
